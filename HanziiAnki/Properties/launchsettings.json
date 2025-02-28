@@ -1,0 +1,10 @@
+﻿{
+    "profiles": {
+      "HanziiAnki (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "HanziiAnki (Unpackaged)": {
+        "commandName": "Project"
+      }
+    }
+}
