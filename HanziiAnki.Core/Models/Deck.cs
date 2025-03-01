@@ -26,6 +26,11 @@ public class Example
 
 public class Sense
 {
+    public Sense()
+    {
+        Examples = new List<Example>();
+    }
+
     public string Translation
     {
         get; set;
@@ -44,12 +49,16 @@ public class Sense
 
 public class Definiton
 {
+    public Definiton()
+    {
+        Senses = new List<Sense>();
+    }
     public string PartOfSpeech
     {
         get; set;
     }
 
-    public Sense Senses
+    public List<Sense> Senses
     {
         get; set;
     }

@@ -8,7 +8,8 @@ namespace HanziiAnki.ViewModels;
 public partial class DefineViewModel : ObservableRecipient
 {
     [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand))]
-    public partial string? Simplified   {
+    public partial string? Simplified
+    {
         get; set;
     }
 
@@ -55,7 +56,7 @@ public partial class DefineViewModel : ObservableRecipient
     }
 
     [ObservableProperty]
-    public partial string? Level
+    public partial string? Levels
     {
         get; set;
     }
@@ -85,7 +86,7 @@ public partial class DefineViewModel : ObservableRecipient
         AudioFemaleURL = String.Empty;
         AudioMaleURL = String.Empty;
         SinoVietnamese = String.Empty;
-        Level = String.Empty;
+        Levels = String.Empty;
         Definition = String.Empty;
         Classifier = String.Empty;
     }
@@ -93,7 +94,28 @@ public partial class DefineViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanLookup))]
     public void LookUp()
     {
-        var res = _wordLookUpService.GetWordDefinition(Traditional ?? Simplified ?? String.Empty);
+        var keyword = String.Empty;
+        if (!String.IsNullOrEmpty(Traditional))
+        {
+            keyword = Traditional;
+        }
+        else if (!String.IsNullOrEmpty(Simplified))
+        {
+            keyword = Simplified;
+        }
+        else
+        {
+            return;
+        }
+        var deck = _wordLookUpService.GetWordDefinition(keyword);
+        Simplified = deck.Simplfied;
+        Traditional = deck.Traditional;
+        Pinyin = deck.Pinyin;
+        Zhuyin = deck.Zhuyin;
+        AudioFemaleURL = deck.AudioFemaleURL;
+        AudioMaleURL = deck.AudioMaleURL;
+        SinoVietnamese = deck.SinoVietnamese;
+        Levels = String.Join(" | ", deck.Levels);
     }
 
     [RelayCommand]
