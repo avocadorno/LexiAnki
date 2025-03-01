@@ -85,7 +85,10 @@
             SelectedItem="{x:Bind ViewModel.Selected, Mode=TwoWay}"
             ViewStateChanged="OnViewStateChanged" />
         <StackPanel Grid.Row="1" HorizontalAlignment="Right">
-            <Button Command="{x:Bind ViewModel.ExportCommand}" Content="Export" />
+            <Button
+                Command="{x:Bind ViewModel.ExportCommand}"
+                Content="Export"
+                Style="{StaticResource AccentButtonStyle}" />
         </StackPanel>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

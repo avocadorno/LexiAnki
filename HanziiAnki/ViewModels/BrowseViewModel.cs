@@ -16,16 +16,21 @@ public partial class BrowseViewModel : ObservableRecipient, INavigationAware
     private readonly ICardDataService _exportedCardDataService;
 
     [ObservableProperty]
-    private ExportedCard? selected;
+    public partial ExportedCard? Selected
+    {
+        get; set;
+    }
 
     public ObservableCollection<ExportedCard> ExportedCards { get; private set; } = new ObservableCollection<ExportedCard>();
+
+    private bool CanExport() => ExportedCards.Any();
 
     public BrowseViewModel(ICardDataService cardDataService)
     {
         _exportedCardDataService = cardDataService;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExport))]
     public async Task ExportAsync()
     {
         foreach (var card in await _exportedCardDataService.GetListDetailsDataAsync())
