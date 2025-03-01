@@ -19,7 +19,7 @@ public sealed class ExportedCardMap : ClassMap<ExportedCard>
         Map(c => c.Levels);
         Map(c => c.Classifier);
         Map(c => c.Radical);
-        Map(c => c.FileName);
+        Map(c => c.FileTag);
         Map(c => c.Definitions);
     }
 }

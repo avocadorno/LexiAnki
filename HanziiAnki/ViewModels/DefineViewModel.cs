@@ -130,6 +130,7 @@ public partial class DefineViewModel : ObservableRecipient
         Radical = card.Radical;
         Levels = card.GetLevelsAsString();
         Definition = card.GetMaskedDefintionAsString();
+        Classifier = card.Classifier;
     }
 
     [RelayCommand(CanExecute = nameof(CanAddToDeck))]
