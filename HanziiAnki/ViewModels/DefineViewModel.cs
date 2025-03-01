@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HanziiAnki.Core.Contracts.Services;
+using HanziiAnki.Core.Services;
 
 namespace HanziiAnki.ViewModels;
 
@@ -64,10 +66,13 @@ public partial class DefineViewModel : ObservableRecipient
         get; set;
     }
 
+    private IWordLookUpService _wordLookUpService;
+
     private bool CanLookup() => !String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional);
 
-    public DefineViewModel()
+    public DefineViewModel(IWordLookUpService wordLookUpService)
     {
+        _wordLookUpService = wordLookUpService;
     }
 
     [RelayCommand]
@@ -88,7 +93,7 @@ public partial class DefineViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanLookup))]
     public void LookUp()
     {
-        
+        var res = _wordLookUpService.GetWordDefinition(Traditional ?? Simplified ?? String.Empty);
     }
 
     [RelayCommand]
