@@ -66,6 +66,7 @@ public partial class App : Application
             services.AddSingleton<ISampleDataService, SampleDataService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IWordLookUpService, HanziiWordLookupService>();
+            services.AddSingleton<ICardDataService, ExportedCardDataService>();
 
             // Views and ViewModels
             services.AddTransient<BrowseViewModel>();

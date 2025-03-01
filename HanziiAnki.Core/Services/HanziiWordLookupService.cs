@@ -22,22 +22,37 @@ public class HanziiWordLookupService : IWordLookUpService
     }
     private string GetQueryURL(string keyword) => $"https://hanzii.net/search/word/{keyword}?hl=vi";
 
-    public ChineseDeck GetWordDefinition(string keyword)
+    public async Task<Card> GetWordDefinition(string keyword)
     {
-        var deck = new ChineseDeck();
+        var card = new Card();
         _htmlDocument.LoadHtml(_webScrappingService.ScrapeWebsite(GetQueryURL(keyword), ".detail-word"));
-        deck.Simplfied = GetSimplified();
-        deck.Traditional = GetTraditional();
-        deck.AudioMaleURL = GetAudioMaleURL();
-        deck.AudioFemaleURL = GetAudioFemaleURL();
-        deck.Pinyin = GetPinyin();
-        deck.Zhuyin = GetZhuyin();
-        deck.SinoVietnamese = GetSinoVietnamese();
-        deck.Levels = GetLevels();
-        deck.Radical = GetRadical();
-        deck.Classifier = GetClassifier();
-        deck.Definitions = GetDefinitions();
-        return deck;
+
+        var simplifiedTask = Task.Run(() => card.Simplfied = GetSimplified());
+        var traditionalTask = Task.Run(() => card.Traditional = GetTraditional());
+        var audioMaleURLTask = Task.Run(() => card.AudioMaleURL = GetAudioMaleURL());
+        var audioFemaleURLTask = Task.Run(() => card.AudioFemaleURL = GetAudioFemaleURL());
+        var pinyinTask = Task.Run(() => card.Pinyin = GetPinyin());
+        var zhuyinTask = Task.Run(() => card.Zhuyin = GetZhuyin());
+        var sinoVietnameseTask = Task.Run(() => card.SinoVietnamese = GetSinoVietnamese());
+        var levelsTask = Task.Run(() => card.Levels = GetLevels());
+        var radicalTask = Task.Run(() => card.Radical = GetRadical());
+        var classifierTask = Task.Run(() => card.Classifier = GetClassifier());
+        var definitionsTask = Task.Run(() => card.Definitions = GetDefinitions());
+
+        await Task.WhenAll(
+            simplifiedTask,
+            traditionalTask,
+            audioMaleURLTask,
+            audioFemaleURLTask,
+            pinyinTask,
+            zhuyinTask,
+            sinoVietnameseTask,
+            levelsTask,
+            radicalTask,
+            classifierTask,
+            definitionsTask);
+
+        return card;
     }
 
     private string GetSimplified()

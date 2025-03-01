@@ -75,13 +75,15 @@ public partial class DefineViewModel : ObservableRecipient
     }
 
     private readonly IWordLookUpService _wordLookUpService;
+    private readonly ICardDataService _exportedCardDataService;
 
     private bool CanLookup() => !String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional);
     private bool CanAddToDeck() => (!String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional)) && !String.IsNullOrEmpty(Definition);
 
-    public DefineViewModel(IWordLookUpService wordLookUpService)
+    public DefineViewModel(IWordLookUpService wordLookUpService, ICardDataService cardDataService)
     {
         _wordLookUpService = wordLookUpService;
+        _exportedCardDataService = cardDataService;
     }
 
     [RelayCommand]
@@ -101,7 +103,7 @@ public partial class DefineViewModel : ObservableRecipient
     }
 
     [RelayCommand(CanExecute = nameof(CanLookup))]
-    public void LookUp()
+    public async Task LookUpAsync()
     {
         string? keyword;
         if (!String.IsNullOrEmpty(Traditional))
@@ -116,23 +118,37 @@ public partial class DefineViewModel : ObservableRecipient
         {
             return;
         }
-        var deck = _wordLookUpService.GetWordDefinition(keyword);
-        Simplified = deck.Simplfied;
-        Traditional = deck.Traditional;
-        Pinyin = deck.Pinyin;
-        Zhuyin = deck.Zhuyin;
-        AudioFemaleURL = deck.AudioFemaleURL;
-        AudioMaleURL = deck.AudioMaleURL;
-        SinoVietnamese = deck.SinoVietnamese;
-        Radical = deck.Radical;
-        Levels = String.Join(" | ", deck.Levels);
-        Definition = HTMLHelper.GetBeautified(String.Join("\n", deck.Definitions));
+        var card = await _wordLookUpService.GetWordDefinition(keyword);
+
+        Simplified = card.Simplfied;
+        Traditional = card.Traditional;
+        Pinyin = card.Pinyin;
+        Zhuyin = card.Zhuyin;
+        AudioFemaleURL = card.AudioFemaleURL;
+        AudioMaleURL = card.AudioMaleURL;
+        SinoVietnamese = card.SinoVietnamese;
+        Radical = card.Radical;
+        Levels = card.GetLevelsAsString();
+        Definition = card.GetMaskedDefintionAsString();
     }
 
     [RelayCommand(CanExecute = nameof(CanAddToDeck))]
     public void AddToDeck()
     {
-
+        _exportedCardDataService.SaveCardAsync(new Core.Models.ExportedCard
+        {
+            Simplified = Simplified,
+            Traditional = Traditional,
+            Pinyin = Pinyin,
+            Zhuyin = Zhuyin,
+            AudioFemaleURL = AudioFemaleURL,
+            AudioMaleURL = AudioMaleURL,
+            SinoVietnamese = SinoVietnamese,
+            Levels = Levels,
+            Classifier = Classifier,
+            Radical = Radical,
+            Definitions = Definition
+        });
         ClearFields();
     }
 }

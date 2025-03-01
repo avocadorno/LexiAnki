@@ -7,13 +7,13 @@ namespace HanziiAnki.Views;
 
 public sealed partial class BrowseDetailControl : UserControl
 {
-    public SampleOrder? ListDetailsMenuItem
+    public ExportedCard? ListDetailsMenuItem
     {
-        get => GetValue(ListDetailsMenuItemProperty) as SampleOrder;
+        get => GetValue(ListDetailsMenuItemProperty) as ExportedCard;
         set => SetValue(ListDetailsMenuItemProperty, value);
     }
 
-    public static readonly DependencyProperty ListDetailsMenuItemProperty = DependencyProperty.Register("ListDetailsMenuItem", typeof(SampleOrder), typeof(BrowseDetailControl), new PropertyMetadata(null, OnListDetailsMenuItemPropertyChanged));
+    public static readonly DependencyProperty ListDetailsMenuItemProperty = DependencyProperty.Register("ListDetailsMenuItem", typeof(ExportedCard), typeof(BrowseDetailControl), new PropertyMetadata(null, OnListDetailsMenuItemPropertyChanged));
 
     public BrowseDetailControl()
     {

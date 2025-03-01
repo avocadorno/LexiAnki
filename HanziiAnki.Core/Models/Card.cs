@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HanziiAnki.Core.Helpers;
 
@@ -88,7 +89,7 @@ public class Definiton
     }
 }
 
-public class ChineseDeck
+public class Card
 {
     public string Simplfied
     {
@@ -141,5 +142,13 @@ public class ChineseDeck
     public List<Definiton> Definitions
     {
         get; set;
+    }
+
+    public string GetLevelsAsString() => string.Join(" | ", Levels);
+    public string GetDefinitionsAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions));
+    public string GetMaskedDefintionAsString()
+    {
+        var definitionText = HTMLHelper.GetBeautified(String.Join("\n", Definitions)).Replace(Simplfied, "____").Replace(Traditional, "____");
+        return Regex.Replace(definitionText, "huān", "____", RegexOptions.IgnoreCase);
     }
 }
