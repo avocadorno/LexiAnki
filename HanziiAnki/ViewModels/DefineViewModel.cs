@@ -1,19 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HanziiAnki.Core.Contracts.Services;
+using HanziiAnki.Core.Helpers;
 using HanziiAnki.Core.Services;
 
 namespace HanziiAnki.ViewModels;
 
 public partial class DefineViewModel : ObservableRecipient
 {
-    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand))]
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand)), NotifyCanExecuteChangedFor(nameof(AddToDeckCommand))]
     public partial string? Simplified
     {
         get; set;
     }
 
-    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand))]
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand)), NotifyCanExecuteChangedFor(nameof(AddToDeckCommand))]
     public partial string? Traditional
     {
         get; set;
@@ -49,7 +50,7 @@ public partial class DefineViewModel : ObservableRecipient
         get; set;
     }
 
-    [ObservableProperty]
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(AddToDeckCommand))]
     public partial string? Definition
     {
         get; set;
@@ -67,9 +68,16 @@ public partial class DefineViewModel : ObservableRecipient
         get; set;
     }
 
-    private IWordLookUpService _wordLookUpService;
+    [ObservableProperty]
+    public partial string? Radical
+    {
+        get; set;
+    }
+
+    private readonly IWordLookUpService _wordLookUpService;
 
     private bool CanLookup() => !String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional);
+    private bool CanAddToDeck() => (!String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional)) && !String.IsNullOrEmpty(Definition);
 
     public DefineViewModel(IWordLookUpService wordLookUpService)
     {
@@ -89,12 +97,13 @@ public partial class DefineViewModel : ObservableRecipient
         Levels = String.Empty;
         Definition = String.Empty;
         Classifier = String.Empty;
+        Radical = String.Empty;
     }
 
     [RelayCommand(CanExecute = nameof(CanLookup))]
     public void LookUp()
     {
-        var keyword = String.Empty;
+        string? keyword;
         if (!String.IsNullOrEmpty(Traditional))
         {
             keyword = Traditional;
@@ -115,12 +124,15 @@ public partial class DefineViewModel : ObservableRecipient
         AudioFemaleURL = deck.AudioFemaleURL;
         AudioMaleURL = deck.AudioMaleURL;
         SinoVietnamese = deck.SinoVietnamese;
+        Radical = deck.Radical;
         Levels = String.Join(" | ", deck.Levels);
+        Definition = HTMLHelper.GetBeautified(String.Join("\n", deck.Definitions));
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAddToDeck))]
     public void AddToDeck()
     {
+
         ClearFields();
     }
 }

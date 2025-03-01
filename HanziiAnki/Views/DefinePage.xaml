@@ -37,11 +37,12 @@
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
                         Text="{x:Bind ViewModel.Definition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         TextWrapping="Wrap" />
-                    <TextBox Header="Audio (F)" Text="{x:Bind ViewModel.AudioFemaleURL, Mode=TwoWay}" />
-                    <TextBox Header="Audio (M)" Text="{x:Bind ViewModel.AudioMaleURL, Mode=TwoWay}" />
-                    <TextBox Header="Levels" Text="{x:Bind ViewModel.Levels, Mode=TwoWay}" />
-                    <TextBox Header="Classifier" Text="{x:Bind ViewModel.Classifier, Mode=TwoWay}" />
-                    <TextBox Header="Sino-Vietnamese" Text="{x:Bind ViewModel.SinoVietnamese, Mode=TwoWay}" />
+                    <TextBox Header="Radical" Text="{x:Bind ViewModel.Radical, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Audio (F)" Text="{x:Bind ViewModel.AudioFemaleURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Audio (M)" Text="{x:Bind ViewModel.AudioMaleURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Levels" Text="{x:Bind ViewModel.Levels, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Classifier" Text="{x:Bind ViewModel.Classifier, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Header="Sino-Vietnamese" Text="{x:Bind ViewModel.SinoVietnamese, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </ScrollViewer>
             <Grid Grid.Row="2">

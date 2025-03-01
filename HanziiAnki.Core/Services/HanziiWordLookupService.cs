@@ -13,8 +13,8 @@ namespace HanziiAnki.Core.Services;
 
 public class HanziiWordLookupService : IWordLookUpService
 {
-    private HtmlDocument _htmlDocument;
-    private IWebScrappingService _webScrappingService;
+    private readonly HtmlDocument _htmlDocument;
+    private readonly IWebScrappingService _webScrappingService;
     public HanziiWordLookupService()
     {
         _htmlDocument = new HtmlDocument();
@@ -34,6 +34,7 @@ public class HanziiWordLookupService : IWordLookUpService
         deck.Zhuyin = GetZhuyin();
         deck.SinoVietnamese = GetSinoVietnamese();
         deck.Levels = GetLevels();
+        deck.Radical = GetRadical();
         deck.Classifier = GetClassifier();
         deck.Definitions = GetDefinitions();
         return deck;
@@ -169,7 +170,7 @@ public class HanziiWordLookupService : IWordLookUpService
                 {
                     var example = new Example();
                     example.Sentence = exampleNode.QuerySelector(".ex-word")?.InnerText ?? String.Empty;
-                    example.Pinyin = exampleNode.QuerySelector(".cc")?.InnerText ?? String.Empty;
+                    example.Pinyin = exampleNode.QuerySelector(".ex-phonetic")?.InnerText ?? String.Empty;
                     example.Translation = exampleNode.QuerySelector(".ex-mean")?.InnerText ?? String.Empty;
                     sense.Examples.Add(example);
                 }
@@ -182,6 +183,6 @@ public class HanziiWordLookupService : IWordLookUpService
 
     private string GetRadical()
     {
-        return "";
+        return _htmlDocument.QuerySelector(".detail-word .txt-detail.word-type > span")?.InnerText ?? String.Empty;
     }
 }

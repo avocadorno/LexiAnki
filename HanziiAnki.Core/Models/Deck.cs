@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HanziiAnki.Core.Helpers;
 
 namespace HanziiAnki.Core.Models;
 
@@ -21,6 +22,15 @@ public class Example
     public string Pinyin
     {
         get; set;
+    }
+
+    public override string ToString()
+    {
+        var parts = new List<string> { Sentence, Pinyin, Translation }
+            .Where(str => !string.IsNullOrEmpty(str))
+            .Select(str => HTMLHelper.GetWrapped(str, "div"));
+
+        return string.Join("\n", parts);
     }
 }
 
@@ -45,6 +55,15 @@ public class Sense
     {
         get; set;
     }
+
+    public override string ToString()
+    {
+        var parts = new List<string> { HTMLHelper.GetBold(Translation), SenseInChinese }
+            .Select(str => HTMLHelper.GetWrapped(str, "div"))
+            .ToList();
+        parts.Add(HTMLHelper.GetUnorderedList(Examples.Select(example => example.ToString()).ToList()));
+        return string.Join("\n", parts);
+    }
 }
 
 public class Definiton
@@ -61,6 +80,11 @@ public class Definiton
     public List<Sense> Senses
     {
         get; set;
+    }
+
+    public override string ToString()
+    {
+        return HTMLHelper.GetItalic(PartOfSpeech.ToUpper()) + "\n" + HTMLHelper.GetOrderedList(Senses.Select(sense => sense.ToString()).ToList());
     }
 }
 
@@ -105,6 +129,11 @@ public class ChineseDeck
     }
 
     public string Classifier
+    {
+        get; set;
+    }
+
+    public string Radical
     {
         get; set;
     }
