@@ -5,26 +5,66 @@ namespace HanziiAnki.ViewModels;
 
 public partial class DefineViewModel : ObservableRecipient
 {
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand))]
+    public partial string? Simplified   {
+        get; set;
+    }
+
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(LookUpCommand))]
+    public partial string? Traditional
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _simplified;
+    public partial string? Pinyin
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _traditional;
+    public partial string? Zhuyin
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _pinyin;
+    public partial string? AudioMaleURL
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _zhuyin;
+    public partial string? AudioFemaleURL
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _audioMaleURL;
+    public partial string? SinoVietnamese
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _audioFemaleURL;
+    public partial string? Definition
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _sinoVietnamese;
+    public partial string? Level
+    {
+        get; set;
+    }
+
     [ObservableProperty]
-    private string? _level;
-    [ObservableProperty]
-    private string? _definition;
-    [ObservableProperty]
-    private string? _classifier;
+    public partial string? Classifier
+    {
+        get; set;
+    }
+
+    private bool CanLookup() => !String.IsNullOrEmpty(Simplified) || !String.IsNullOrEmpty(Traditional);
 
     public DefineViewModel()
     {
@@ -33,22 +73,22 @@ public partial class DefineViewModel : ObservableRecipient
     [RelayCommand]
     public void ClearFields()
     {
-        _simplified = string.Empty;
-        _traditional = string.Empty;
-        _pinyin = string.Empty;
-        _zhuyin = string.Empty;
-        _audioMaleURL = string.Empty;
-        _audioFemaleURL = string.Empty;
-        _sinoVietnamese = string.Empty;
-        _level = string.Empty;
-        _definition = string.Empty;
-        _classifier = string.Empty;
+        Simplified = String.Empty;
+        Traditional = String.Empty;
+        Pinyin = String.Empty;
+        Zhuyin = String.Empty;
+        AudioFemaleURL = String.Empty;
+        AudioMaleURL = String.Empty;
+        SinoVietnamese = String.Empty;
+        Level = String.Empty;
+        Definition = String.Empty;
+        Classifier = String.Empty;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanLookup))]
     public void LookUp()
     {
-    
+        
     }
 
     [RelayCommand]

@@ -21,10 +21,10 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <StackPanel Padding="0,0,20,0" Spacing="10">
-                <TextBox Header="Simplified" Text="{x:Bind ViewModel.Simplified, Mode=TwoWay}" />
-                <TextBox Header="Traditional" Text="{x:Bind ViewModel.Traditional, Mode=TwoWay}" />
-                <TextBox Header="Pinyin" Text="{x:Bind ViewModel.Pinyin, Mode=TwoWay}" />
-                <TextBox Header="Zhuyin" Text="{x:Bind ViewModel.Zhuyin, Mode=TwoWay}" />
+                <TextBox Header="Simplified" Text="{x:Bind ViewModel.Simplified, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Header="Traditional" Text="{x:Bind ViewModel.Traditional, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Header="Pinyin" Text="{x:Bind ViewModel.Pinyin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Header="Zhuyin" Text="{x:Bind ViewModel.Zhuyin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
             <ScrollViewer Grid.Row="1" Padding="0,0,20,0">
                 <StackPanel Spacing="10">
@@ -63,7 +63,7 @@
 
                     <Button
                         HorizontalAlignment="Right"
-                        Command="{x:Bind ViewModel.ClearFieldsCommand}"
+                        Command="{x:Bind ViewModel.LookUpCommand}"
                         Content="Look Up" />
                     <Button
                         HorizontalAlignment="Right"

@@ -36,6 +36,10 @@
   <ItemGroup>
     <ProjectReference Include="..\HanziiAnki.Core\HanziiAnki.Core.csproj" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
   
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
