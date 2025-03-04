@@ -180,7 +180,7 @@ public class HanziiWordLookupService : IWordLookUpService
                 var sense = new Sense();
                 sense.Translation = item.QuerySelector(".box-mean .txt-mean .cl-content")?.InnerText ?? String.Empty;
                 sense.SenseInChinese = item.QuerySelector(".box-mean .txt-mean-explain")?.InnerText ?? String.Empty;
-                var exampleNodes = item.QuerySelectorAll(".box-example");
+                var exampleNodes = item.QuerySelectorAll(".box-example .content-example");
                 foreach (var exampleNode in exampleNodes)
                 {
                     var example = new Example();

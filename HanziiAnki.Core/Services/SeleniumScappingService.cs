@@ -20,7 +20,9 @@ class SeleniumScappingService : IWebScrappingService
         {
             if (_driver == null || IsBrowserClosed())
             {
-                _driver = new ChromeDriver();
+                ChromeOptions options = new ChromeOptions();
+                options.AddArgument("--lang=vi");
+                _driver = new ChromeDriver(options);
             }
             return _driver;
         }

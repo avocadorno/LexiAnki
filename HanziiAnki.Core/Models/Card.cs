@@ -146,5 +146,5 @@ public class Card
 
     public string GetLevelsAsString() => string.Join(" | ", Levels);
     public string GetDefinitionsAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions));
-    public string GetMaskedDefintionAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions)).Replace(Simplfied, "____").Replace(Traditional, "____");
+    public string GetMaskedDefintionAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions)).Replace(Simplfied, "____").Replace(Traditional, "____").Replace(Pinyin, "____");
 }
