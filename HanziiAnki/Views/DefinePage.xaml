@@ -25,10 +25,12 @@
                 <TextBox
                     FontSize="25"
                     Header="Traditional"
+                    KeyDown="Keyword_KeyDown"
                     Text="{x:Bind ViewModel.Traditional, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBox
                     FontSize="25"
                     Header="Simplified"
+                    KeyDown="Keyword_KeyDown"
                     Text="{x:Bind ViewModel.Simplified, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBox Header="Pinyin" Text="{x:Bind ViewModel.Pinyin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBox Header="Zhuyin" Text="{x:Bind ViewModel.Zhuyin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
