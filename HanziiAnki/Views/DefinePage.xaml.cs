@@ -25,11 +25,13 @@ public sealed partial class DefinePage : Page
         if (e.Key == VirtualKey.Enter && keyboardState.HasFlag(CoreVirtualKeyStates.Down))
         {
             ViewModel.AddToDeck();
+            return;
         }
 
-        if (e.Key == Windows.System.VirtualKey.Enter)
+        if (e.Key == VirtualKey.Enter)
         {
             await ViewModel.LookUpAsync();
+            return;
         }
         
     }

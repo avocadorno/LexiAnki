@@ -118,6 +118,7 @@ public partial class DefineViewModel : ObservableRecipient
         {
             return;
         }
+
         var card = await _wordLookUpService.GetWordDefinition(keyword);
 
         Simplified = card.Simplfied;
@@ -136,20 +137,23 @@ public partial class DefineViewModel : ObservableRecipient
     [RelayCommand(CanExecute = nameof(CanAddToDeck))]
     public void AddToDeck()
     {
-        _exportedCardDataService.SaveCardAsync(new Core.Models.ExportedCard
+        if (CanAddToDeck())
         {
-            Simplified = Simplified,
-            Traditional = Traditional,
-            Pinyin = Pinyin,
-            Zhuyin = Zhuyin,
-            AudioFemaleURL = AudioFemaleURL,
-            AudioMaleURL = AudioMaleURL,
-            SinoVietnamese = SinoVietnamese,
-            Levels = Levels,
-            Classifier = Classifier,
-            Radical = Radical,
-            Definitions = Definition
-        });
-        ClearFields();
+            _exportedCardDataService.SaveCardAsync(new Core.Models.ExportedCard
+            {
+                Simplified = Simplified,
+                Traditional = Traditional,
+                Pinyin = Pinyin,
+                Zhuyin = Zhuyin,
+                AudioFemaleURL = AudioFemaleURL,
+                AudioMaleURL = AudioMaleURL,
+                SinoVietnamese = SinoVietnamese,
+                Levels = Levels,
+                Classifier = Classifier,
+                Radical = Radical,
+                Definitions = Definition
+            });
+            ClearFields();
+        }
     }
 }
