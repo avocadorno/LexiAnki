@@ -151,6 +151,20 @@ public class HanziiWordLookupService : IWordLookUpService
         var classifierText = String.Join("", _viHtmlDocument.QuerySelectorAll(".detail-word .word-deco").Select(node => node.InnerText));
         return classifierText.StartsWith(": ") ? classifierText.Substring(2) : classifierText;
     }
+    private string SwapBracketContent(string input)
+    {
+        var start = input.IndexOf('【');
+        var end = input.IndexOf('】');
+
+        if (start != -1 && end != -1 && start < end)
+        {
+            var traditional = input.Substring(start + 1, end - start - 1);
+            var simplified = input.Substring(0, start) + input.Substring(end + 1);
+            return $"{traditional}【{simplified}】";
+        }
+
+        return input;
+    }
 
     private List<Definiton> GetDefinitions(bool en)
     {
@@ -171,7 +185,7 @@ public class HanziiWordLookupService : IWordLookUpService
                 foreach (var exampleNode in exampleNodes)
                 {
                     var example = new Example();
-                    example.Sentence = exampleNode.QuerySelector(".ex-word")?.InnerText ?? String.Empty;
+                    example.Sentence = SwapBracketContent(exampleNode.QuerySelector(".ex-word")?.InnerText ?? String.Empty);
                     example.Pinyin = exampleNode.QuerySelector(".ex-phonetic")?.InnerText ?? String.Empty;
                     example.Translation = exampleNode.QuerySelector(".ex-mean")?.InnerText ?? String.Empty;
                     sense.Examples.Add(example);
