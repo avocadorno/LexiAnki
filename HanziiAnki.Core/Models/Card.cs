@@ -59,10 +59,8 @@ public class Sense
 
     public override string ToString()
     {
-        var parts = new List<string> { HTMLHelper.GetBold(Translation), SenseInChinese }
-            .Select(str => HTMLHelper.GetWrapped(str, "div"))
-            .ToList();
-        parts.Add(HTMLHelper.GetUnorderedList(Examples.Select(example => example.ToString()).ToList()));
+        var parts = new List<string> { HTMLHelper.GetWrapped(HTMLHelper.GetBold(Translation), "div") };
+        parts.Add(HTMLHelper.GetUnorderedList([.. Examples.Select(example => example.ToString())]));
         return string.Join("\n", parts);
     }
 }
@@ -139,12 +137,20 @@ public class Card
         get; set;
     }
 
-    public List<Definiton> Definitions
+    public List<Definiton> EnDefinitions
+    {
+        get; set;
+    }
+
+    public List<Definiton> ViDefinitions
     {
         get; set;
     }
 
     public string GetLevelsAsString() => string.Join(" | ", Levels);
-    public string GetDefinitionsAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions));
-    public string GetMaskedDefintionAsString() => HTMLHelper.GetBeautified(String.Join("\n", Definitions)).Replace(Simplfied, "____").Replace(Traditional, "____").Replace(Pinyin, "____");
+    public string GetDefinitionsAsString()
+    {
+        return HTMLHelper.GetBeautified(String.Join("\n", EnDefinitions)) + "<hr>\n" + HTMLHelper.GetBeautified(String.Join("\n", ViDefinitions));
+    }
+    public string GetMaskedDefintionAsString() => GetDefinitionsAsString().Replace(Simplfied, "____").Replace(Traditional, "____").Replace(Pinyin, "____");
 }

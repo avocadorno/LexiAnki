@@ -13,19 +13,23 @@ namespace HanziiAnki.Core.Services;
 
 public class HanziiWordLookupService : IWordLookUpService
 {
-    private readonly HtmlDocument _htmlDocument;
+    private readonly HtmlDocument _viHtmlDocument;
+    private readonly HtmlDocument _enHtmlDocument;
     private readonly IWebScrappingService _webScrappingService;
+    private const string ElementToWaitFor = ".detail-word";
     public HanziiWordLookupService()
     {
-        _htmlDocument = new HtmlDocument();
+        _viHtmlDocument = new HtmlDocument();
+        _enHtmlDocument = new HtmlDocument();
         _webScrappingService = new SeleniumScappingService();
     }
-    private string GetQueryURL(string keyword) => $"https://hanzii.net/search/word/{keyword}?hl=vi";
+    private string GetQueryURL(string keyword, bool en) => $"https://hanzii.net/search/word/{keyword}?hl={(en ? "en" : "vi")}";
 
     public async Task<Card> GetWordDefinition(string keyword)
     {
         var card = new Card();
-        _htmlDocument.LoadHtml(_webScrappingService.ScrapeWebsite(GetQueryURL(keyword), ".detail-word"));
+        _enHtmlDocument.LoadHtml(_webScrappingService.ScrapeWebsite(GetQueryURL(keyword, true), ElementToWaitFor));
+        _viHtmlDocument.LoadHtml(_webScrappingService.ScrapeWebsite(GetQueryURL(keyword, false), ElementToWaitFor));
 
         var simplifiedTask = Task.Run(() => card.Simplfied = GetSimplified());
         var traditionalTask = Task.Run(() => card.Traditional = GetTraditional());
@@ -37,7 +41,8 @@ public class HanziiWordLookupService : IWordLookUpService
         var levelsTask = Task.Run(() => card.Levels = GetLevels());
         var radicalTask = Task.Run(() => card.Radical = GetRadical());
         var classifierTask = Task.Run(() => card.Classifier = GetClassifier());
-        var definitionsTask = Task.Run(() => card.Definitions = GetDefinitions());
+        var enDefinitionsTask = Task.Run(() => card.EnDefinitions = GetDefinitions(true));
+        var viDefinitionsTask = Task.Run(() => card.ViDefinitions = GetDefinitions(false));
 
         await Task.WhenAll(
             simplifiedTask,
@@ -50,47 +55,34 @@ public class HanziiWordLookupService : IWordLookUpService
             levelsTask,
             radicalTask,
             classifierTask,
-            definitionsTask);
+            enDefinitionsTask,
+            viDefinitionsTask);
 
         return card;
     }
 
     private string GetSimplified()
     {
-        try
-        {
-            return String.Join("", _htmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .cl-item").Select(node => node.InnerText));
-        }
-        catch (NullReferenceException)
-        {
-            return String.Empty;
-        }
-
+        var characterNodes = _viHtmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .cl-item");
+        return characterNodes.Any() ? String.Join("", characterNodes.Select(node => node.InnerText)) : String.Empty;
     }
 
     private string GetTraditional()
     {
-        var traditionalNode = _htmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .wrap-convert > .cl-item");
-        if (traditionalNode.Count == 0)
-        {
-            return GetSimplified();
-        }
-        return String.Join("", _htmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .wrap-convert > .cl-item").Select(node => node.InnerText));
+        var characterNodes = _viHtmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .wrap-convert > .cl-item");
+        return characterNodes.Any() ? String.Join("", characterNodes.Select(node => node.InnerText)) : GetSimplified();
     }
 
     private string getPhonetics(bool isPinyin)
     {
-        try
+        var phoneticNodes = _viHtmlDocument.QuerySelectorAll(".detail-word .txt-word-multi .txt-pinyin");
+        var index = isPinyin ? 0 : 1;
+        if (phoneticNodes.Count > index + 1)
         {
-            var phoneticNodes = _htmlDocument.QuerySelectorAll(".detail-word .txt-word-multi .txt-pinyin");
-            var phoneticText = isPinyin ? phoneticNodes[0].InnerText : phoneticNodes[1].InnerText;
-
-            return phoneticText.Substring(1, phoneticText.Length - 2);
+            var phoneticText = phoneticNodes[index].InnerText;
+            return phoneticText.Length > 2 ? phoneticText.Substring(1, phoneticText.Length - 2) : string.Empty;
         }
-        catch (NullReferenceException)
-        {
-            return String.Empty;
-        }
+        return String.Empty;
     }
 
     private string GetPinyin()
@@ -105,22 +97,18 @@ public class HanziiWordLookupService : IWordLookUpService
 
     private string GetSinoVietnamese()
     {
-        try
-        {
-            var sino_vie = _htmlDocument.QuerySelector(".detail-word .txt-word-multi .txt-cn_vi").InnerText;
-            return sino_vie.Substring(1, sino_vie.Length - 2);
-        }
-        catch (NullReferenceException)
-        {
-            return String.Empty;
-        }
+        var nodes = _viHtmlDocument.QuerySelector(".detail-word .txt-word-multi .txt-cn_vi");
+        return nodes != null && nodes.InnerText.Length > 2
+            ? nodes.InnerText.Substring(1, nodes.InnerText.Length - 2)
+            : string.Empty;
     }
+
 
     private string GetAudioURL(bool isMale)
     {
-        try
+        var classes = _viHtmlDocument.QuerySelector(".detail-word .box-detail .box-detail-wrap").GetClasses();
+        if (classes.Any())
         {
-            var classes = _htmlDocument.QuerySelector(".detail-word .box-detail .box-detail-wrap").GetClasses();
             var wordID = 0;
             foreach (var _class in classes)
             {
@@ -139,10 +127,8 @@ public class HanziiWordLookupService : IWordLookUpService
                 return $"https://hanzii.net/audios/cnvi/0/{wordID}.mp3";
             }
         }
-        catch (NullReferenceException)
-        {
+        else
             return String.Empty;
-        }
     }
 
     private string GetAudioMaleURL()
@@ -157,19 +143,20 @@ public class HanziiWordLookupService : IWordLookUpService
 
     private List<string> GetLevels()
     {
-        return _htmlDocument.QuerySelectorAll(".detail-word .word-level .tags").Select(node => node.InnerText).ToList();
+        return _viHtmlDocument.QuerySelectorAll(".detail-word .word-level .tags").Select(node => node.InnerText).ToList();
     }
 
     private string GetClassifier()
     {
-        var classifierText = String.Join("", _htmlDocument.QuerySelectorAll(".detail-word .word-deco").Select(node => node.InnerText));
+        var classifierText = String.Join("", _viHtmlDocument.QuerySelectorAll(".detail-word .word-deco").Select(node => node.InnerText));
         return classifierText.StartsWith(": ") ? classifierText.Substring(2) : classifierText;
     }
 
-    private List<Definiton> GetDefinitions()
+    private List<Definiton> GetDefinitions(bool en)
     {
         var definitions = new List<Definiton>();
-        var definitionNodes = _htmlDocument.QuerySelectorAll(".box-detail .box-content");
+        var htmlDocument = (en) ? _enHtmlDocument : _viHtmlDocument;
+        var definitionNodes = htmlDocument.QuerySelectorAll(".box-detail .box-content");
         foreach (var definitionNode in definitionNodes)
         {
             var definition = new Definiton();
@@ -198,6 +185,6 @@ public class HanziiWordLookupService : IWordLookUpService
 
     private string GetRadical()
     {
-        return _htmlDocument.QuerySelector(".detail-word .txt-detail.word-type > span")?.InnerText ?? String.Empty;
+        return _viHtmlDocument.QuerySelector(".detail-word .txt-detail.word-type > span")?.InnerText ?? String.Empty;
     }
 }
