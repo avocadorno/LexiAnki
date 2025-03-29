@@ -30,32 +30,36 @@ public partial class BrowseViewModel : ObservableRecipient, INavigationAware
         _exportedCardDataService = cardDataService;
     }
 
+    private async Task DownloadFileAsync(HttpClient client, string url, string filePath)
+    {
+        using HttpResponseMessage response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        using Stream contentStream = await response.Content.ReadAsStreamAsync(),
+                       fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+        await contentStream.CopyToAsync(fileStream);
+    }
+
     [RelayCommand(CanExecute = nameof(CanExport))]
     public async Task ExportAsync()
     {
+        var downloadFolder = @"D:/Output/";
+        if (!Directory.Exists(downloadFolder))
+        {
+            Directory.CreateDirectory(downloadFolder);
+        }
+
+        using HttpClient client = new HttpClient();
+        var downloadTasks = new List<Task>();
+
         foreach (var card in await _exportedCardDataService.GetListDetailsDataAsync())
         {
-            var folderPath = @"D:/Output/";
-
-            // Check if the directory exists
-            if (!Directory.Exists(folderPath))
+            if (!String.IsNullOrEmpty(card.AudioMaleURL))
             {
-                // Create the directory if it does not exist
-                Directory.CreateDirectory(folderPath);
+                downloadTasks.Add(DownloadFileAsync(client, card.AudioMaleURL, downloadFolder + card.FileName));
             }
-
-            var url = card.AudioFemaleURL;
-            var filePath = folderPath + card.FileName;
-
-            if (string.IsNullOrEmpty(url))
-                continue;
-            using HttpClient client = new HttpClient();
-            using HttpResponseMessage response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            using Stream contentStream = await response.Content.ReadAsStreamAsync(),
-                           fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-            await contentStream.CopyToAsync(fileStream);
         }
+
+        await Task.WhenAll(downloadTasks);
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
