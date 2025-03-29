@@ -147,10 +147,17 @@ public class Card
         get; set;
     }
 
-    public string GetLevelsAsString() => string.Join(" | ", Levels);
+    public string GetLevelsAsString() => String.Join(" | ", Levels);
     public string GetDefinitionsAsString()
     {
         return HTMLHelper.GetBeautified(String.Join("\n", EnDefinitions)) + "<hr>\n" + HTMLHelper.GetBeautified(String.Join("\n", ViDefinitions));
     }
-    public string GetMaskedDefintionAsString() => GetDefinitionsAsString().Replace(Simplfied, "____").Replace(Traditional, "____").Replace(Pinyin, "____");
+    public string GetMaskedDefintionAsString()
+    {
+        var maskedDefinitions = GetDefinitionsAsString();
+        var maskedSimplified = String.Concat(Simplfied.Select(c => $"#{c}#"));
+        var maskedTraditional = String.Concat(Traditional.Select(c => $"#{c}#"));
+        var maskedPinyin = String.Join(" ", Pinyin.Split(" ").Select(word => $"#{word}#"));
+        return GetDefinitionsAsString().Replace(Simplfied, maskedSimplified).Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
+    }
 }
