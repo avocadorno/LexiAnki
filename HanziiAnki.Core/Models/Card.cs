@@ -158,6 +158,12 @@ public class Card
         var maskedSimplified = String.Concat(Simplfied.Select(c => $"#{c}#"));
         var maskedTraditional = String.Concat(Traditional.Select(c => $"#{c}#"));
         var maskedPinyin = String.Join(" ", Pinyin.Split(" ").Select(word => $"#{word}#"));
-        return GetDefinitionsAsString().Replace(Simplfied, maskedSimplified).Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
+
+        if (Simplfied.Equals(Traditional))
+        {
+            return maskedDefinitions.Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
+        }
+
+        return maskedDefinitions.Replace(Simplfied, maskedSimplified).Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
     }
 }

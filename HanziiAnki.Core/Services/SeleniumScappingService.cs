@@ -22,6 +22,8 @@ class SeleniumScappingService : IWebScrappingService
             {
                 ChromeOptions options = new ChromeOptions();
                 options.AddArgument("--lang=vi");
+                options.AddArgument("--disable-gpu");
+                options.AddArgument("--disable-software-rasterizer");
                 _driver = new ChromeDriver(options);
             }
             return _driver;
