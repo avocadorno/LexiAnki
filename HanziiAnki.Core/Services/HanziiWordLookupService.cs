@@ -16,7 +16,7 @@ public class HanziiWordLookupService : IWordLookUpService
     private readonly HtmlDocument _viHtmlDocument;
     private readonly HtmlDocument _enHtmlDocument;
     private readonly IWebScrappingService _webScrappingService;
-    private const string ElementToWaitFor = ".detail-word";
+    private const string ElementToWaitFor = ".box-detail-wrap";
     public HanziiWordLookupService()
     {
         _viHtmlDocument = new HtmlDocument();
@@ -63,24 +63,24 @@ public class HanziiWordLookupService : IWordLookUpService
 
     private string GetSimplified()
     {
-        var characterNodes = _viHtmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .cl-item");
+        var characterNodes = _viHtmlDocument.QuerySelectorAll("#word .line-word .simple-tradition-wrap > .query-matched");
         return characterNodes.Any() ? String.Join("", characterNodes.Select(node => node.InnerText)) : String.Empty;
     }
 
     private string GetTraditional()
     {
-        var characterNodes = _viHtmlDocument.QuerySelectorAll(".query-search .simple-tradition-wrap > .wrap-convert > .cl-item");
+        var characterNodes = _viHtmlDocument.QuerySelectorAll("#word .line-word .simple-tradition-wrap > .wrap-convert > .matched");
         return characterNodes.Any() ? String.Join("", characterNodes.Select(node => node.InnerText)) : GetSimplified();
     }
 
     private string getPhonetics(bool isPinyin)
     {
-        var phoneticNodes = _viHtmlDocument.QuerySelectorAll(".detail-word .txt-word-multi .txt-pinyin");
+        var phoneticNodes = _viHtmlDocument.QuerySelectorAll("#word .line-word .txt-pinyin");
         var index = isPinyin ? 0 : 1;
         if (phoneticNodes.Count > index + 1)
         {
             var phoneticText = phoneticNodes[index].InnerText;
-            return phoneticText.Length > 2 ? phoneticText.Substring(1, phoneticText.Length - 2) : string.Empty;
+            return phoneticText.Length > 2 ? phoneticText.Substring(1, phoneticText.Length - 2).Trim() : string.Empty;
         }
         return String.Empty;
     }
