@@ -37,7 +37,7 @@ public class ExportedCard
     {
         get; set;
     }
-    public string FileName => AudioFemaleURL.Split("/").Last();
+    public string FileName => (Random.Shared.Next(2) == 0 ? AudioFemaleURL : AudioMaleURL).Split("/").Last();
     public string FileTag => $"[sound:{FileName}]";
     public string SinoVietnamese
     {

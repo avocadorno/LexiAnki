@@ -147,7 +147,8 @@ public class Card
         get; set;
     }
 
-    public string GetLevelsAsString() => String.Join(" | ", Levels);
+    public string GetLevelsAsString() => Levels.Any() ? String.Join(" | ", Levels) : String.Empty;
+    
     public string GetDefinitionsAsString()
     {
         return HTMLHelper.GetBeautified(String.Join("\n", EnDefinitions)) + "<hr>\n" + HTMLHelper.GetBeautified(String.Join("\n", ViDefinitions));
