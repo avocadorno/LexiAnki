@@ -165,6 +165,12 @@ public class Card
             return maskedDefinitions.Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
         }
 
-        return maskedDefinitions.Replace(Simplfied, maskedSimplified).Replace(Traditional, maskedTraditional).Replace(Pinyin, maskedPinyin);
+        if (!String.IsNullOrEmpty(Simplfied))
+            maskedDefinitions = maskedDefinitions.Replace(Simplfied, maskedSimplified);
+        if (!String.IsNullOrEmpty(maskedTraditional))
+            maskedDefinitions = maskedDefinitions.Replace(Traditional, maskedTraditional);
+        if (!String.IsNullOrEmpty(Pinyin))
+            maskedDefinitions = maskedDefinitions.Replace(Pinyin, maskedPinyin);
+        return maskedDefinitions;
     }
 }
