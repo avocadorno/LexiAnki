@@ -178,6 +178,9 @@ public class HanziiWordLookupService : IWordLookUpService
             var items = definitionNode.QuerySelectorAll(".content-item");
             foreach (var item in items)
             {
+                if (item.QuerySelector("app-svg-icon[name=\"fill_lock\"]") is not null)
+                    continue;
+
                 var sense = new Sense();
                 sense.Translation = item.QuerySelector(".box-mean .txt-mean .simple-tradition-wrap")?.InnerText ?? String.Empty;
                 sense.SenseInChinese = item.QuerySelector(".box-example .txt-mean-explain")?.InnerText ?? String.Empty;

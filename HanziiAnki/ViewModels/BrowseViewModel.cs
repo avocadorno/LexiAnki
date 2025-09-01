@@ -30,13 +30,33 @@ public partial class BrowseViewModel : ObservableRecipient, INavigationAware
         _exportedCardDataService = cardDataService;
     }
 
-    private async Task DownloadFileAsync(HttpClient client, string url, string filePath)
+    private async Task<bool> DownloadFileAsync(HttpClient client, string url, string filePath)
     {
-        using HttpResponseMessage response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        using Stream contentStream = await response.Content.ReadAsStreamAsync(),
-                       fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-        await contentStream.CopyToAsync(fileStream);
+        try
+        {
+            using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            using Stream contentStream = await response.Content.ReadAsStreamAsync();
+            using FileStream fileStream = new FileStream(
+                filePath,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize: 8192,
+                useAsync: true);
+
+            await contentStream.CopyToAsync(fileStream);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanExport))]
@@ -49,13 +69,15 @@ public partial class BrowseViewModel : ObservableRecipient, INavigationAware
         }
 
         using HttpClient client = new HttpClient();
-        var downloadTasks = new List<Task>();
+        var downloadTasks = new List<Task<bool>>();
 
         foreach (var card in await _exportedCardDataService.GetListDetailsDataAsync())
         {
-            if (!String.IsNullOrEmpty(card.AudioMaleURL))
+            if (!String.IsNullOrEmpty(card.AudioMaleURL) && !String.IsNullOrEmpty(card.AudioFemaleURL))
             {
-                downloadTasks.Add(DownloadFileAsync(client, card.AudioMaleURL, downloadFolder + card.FileName));
+                Random rand = new Random();
+                var maleAudio = rand.Next(0, 2) == 1;
+                downloadTasks.Add(DownloadFileAsync(client, (maleAudio) ? card.AudioMaleURL : card.AudioFemaleURL, downloadFolder + card.FileName));
             }
         }
 
