@@ -88,7 +88,16 @@ public partial class BrowseViewModel : ObservableRecipient, INavigationAware
             Delimiter = "|"
         };
 
-        using var writer = new StreamWriter("D:/Output/output.csv");
+        var outFileName = "";
+        var fileIndex = 0;
+        do
+        {
+            outFileName = $"output_{fileIndex}.csv";
+            fileIndex += 1;
+        }
+        while (File.Exists($"{downloadFolder}{outFileName}"));
+
+        using var writer = new StreamWriter($"{downloadFolder}{outFileName}");
         using var csv = new CsvWriter(writer, config);
         csv.Context.RegisterClassMap<ExportedCardMap>();
         csv.WriteRecords(await _exportedCardDataService.GetListDetailsDataAsync());
